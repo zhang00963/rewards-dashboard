@@ -1,0 +1,50 @@
+services:
+  rewards-dashboard:
+    #image: ghcr.io/mgrimace/rewards-dashboard:latest
+    build:
+      context: ./rewards-dashboard
+    image: rewards-dashboard:china
+    container_name: rewards-dashboard
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${PORT:-8890}:${PORT:-8890}"
+    environment:
+      # URL of the bot's Control API (scripts/api/server.js).
+      #  - If the Control API runs as a container on a shared Docker
+      #    network, use its service/container name, e.g.
+      #    http://microsoft-rewards-script:3010
+      #  - If it runs on the Docker host, use
+      #    http://host.docker.internal:3010. extra_hosts above provides this
+      #    hostname on Linux Docker; Docker Desktop provides it natively.
+      CONTROL_API_URL: "${CONTROL_API_URL:-http://host.docker.internal:3010}"
+
+      # Shared secret — must match the Control API's API_TOKEN. Sourced
+      # from your shell / a .env file beside this compose.yaml. Leave it
+      # unset only if the API runs without a token.
+      CONTROL_API_TOKEN: "${CONTROL_API_TOKEN:-}"
+
+      # Your timezone, so the daily point buckets line up (e.g.
+      # Europe/Amsterdam). Defaults to UTC.
+      TZ: "${TZ:-Asia/Shanghai}"
+
+      # Optional dashboard settings from .env.
+      DASHBOARD_USERNAME: "${DASHBOARD_USERNAME:-}"
+      DASHBOARD_PASSWORD: "${DASHBOARD_PASSWORD:-}"
+      PORT: "${PORT:-8890}"
+      DASHBOARD_TITLE: "${DASHBOARD_TITLE:-Microsoft Rewards}"
+      POLL_MS: "${POLL_MS:-5000}"
+      LOG_REPLAY: "${LOG_REPLAY:-300}"
+      DATA_DIR: /data
+
+    # The dashboard stores point history, runs, activity and its own
+    # schedule, all in ./data/dashboard.sqlite. The bot's Control API is
+    # otherwise stateless; the one exception is config/schedule.json on the
+    # bot side, written only if you enable API_ALLOW_SCHEDULE_WRITE there and
+    # use the "Bot container" scheduler from this dashboard's Schedule tab.
+    volumes:
+      - ./data:/data
+
+    security_opt:
+      - no-new-privileges:true

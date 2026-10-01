@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <title>Microsoft Rewards Dashboard</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="topbar">
+      <h1>🏅 Rewards Dashboard</h1>
+      <div class="topbar-right">
+        <p
+          id="statusBadge"
+          class="status-badge status-unknown"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="dot" aria-hidden="true"></span>
+          <span id="statusText">Connecting&hellip;</span>
+        </p>
+        <div class="controls-group">
+          <button
+            type="button"
+            id="modeToggle"
+            class="icon-btn"
+            aria-label="Switch to dark mode"
+            title="Switch to dark mode"
+          >
+            <span id="modeIcon" aria-hidden="true">&#9789;</span>
+          </button>
+          <div class="theme-select-wrapper">
+            <label for="themeSelect" class="visually-hidden">Theme</label>
+            <select id="themeSelect" class="theme-select"></select>
+          </div>
+          <div class="theme-select-wrapper">
+            <label for="languageSelect" class="visually-hidden">Language</label>
+            <select id="languageSelect" class="theme-select language-select">
+              <option value="en">English</option>
+              <option value="zh-CN">简体中文</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabbar" aria-label="Dashboard sections">
+      <div class="tabbar-inner" id="tabBar" role="tablist"></div>
+    </nav>
+
+    <!-- Run controls stay visible on every tab: stopping a bad run shouldn't
+     depend on which section you happen to be looking at. -->
+    <div class="control-strip">
+      <div class="ctl-state">
+        <span id="ctlPill" class="pill pill-idle">Idle</span>
+        <span id="ctlDetail" class="ctl-detail">&ndash;</span>
+      </div>
+      <div class="ctl-actions">
+        <button type="button" id="btnStart" class="btn btn-primary">
+          Start run
+        </button>
+        <button type="button" id="btnStop" class="btn">Stop</button>
+        <button type="button" id="btnRestart" class="btn">Restart</button>
+        <div class="ctl-more">
+          <button
+            type="button"
+            id="btnMore"
+            class="btn btn-icon"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-label="More actions"
+            title="More actions"
+          >
+            &#8942;
+          </button>
+          <div class="ctl-menu" id="ctlMenu" hidden>
+            <button
+              type="button"
+              id="btnForceStop"
+              class="ctl-menu-item danger"
+            >
+              Force stop (SIGKILL)
+            </button>
+            <button type="button" id="btnShutdown" class="ctl-menu-item danger">
+              Shut down control API
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main id="main">
+      <section
+        id="loginCodesSection"
+        class="login-codes-section"
+        hidden
+        aria-labelledby="login-codes-heading"
+      >
+        <h2 id="login-codes-heading">&#128273; Login approval needed</h2>
+        <div id="loginCodesList" class="login-codes-list"></div>
+      </section>
+      <div
+        id="loginCodesAnnounce"
+        class="visually-hidden"
+        aria-live="assertive"
+        aria-atomic="true"
+      ></div>
+
+      <div id="tabPanels"></div>
+    </main>
+
+    <footer class="foot">
+        <span id="footerVersion"></span>
+        <span class="foot-separator">•</span>
+        <span id="footerScriptVersion"></span>
+        <span class="foot-separator">•</span>
+        <span id="footerStatus">Connecting…</span>
+    </footer>
+
+    <script src="/version.js"></script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

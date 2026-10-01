@@ -1,0 +1,13 @@
+{
+  "name": "rewards-dashboard",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Dashboard for script",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

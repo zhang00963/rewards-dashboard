@@ -1,0 +1,43 @@
+# 外部网络方案：将此文件中的 rewards-dashboard 服务和 networks 配置
+# 合并到 Microsoft Rewards Script 项目的 compose.yaml。
+#
+# 合并前，请将本项目内层的 rewards-dashboard 目录复制到机器人项目根目录，
+# 并执行 docker network create rewards-network。机器人现有的
+# microsoft-rewards-script 服务也必须加入 rewards-network。
+
+services:
+  rewards-dashboard:
+    build:
+      context: ./rewards-dashboard
+    image: "${DASHBOARD_IMAGE:-rewards-dashboard:china}"
+    container_name: rewards-dashboard
+    restart: unless-stopped
+    depends_on:
+      microsoft-rewards-script:
+        condition: service_healthy
+    ports:
+      - "${PORT:-8890}:${PORT:-8890}"
+    env_file:
+      - .env
+    environment:
+      CONTROL_API_URL: http://microsoft-rewards-script:3010
+      CONTROL_API_TOKEN: "${API_TOKEN}"
+      DASHBOARD_USERNAME: "${DASHBOARD_USERNAME:-}"
+      DASHBOARD_PASSWORD: "${DASHBOARD_PASSWORD:-}"
+      PORT: "${PORT:-8890}"
+      TZ: "${TZ:-Asia/Shanghai}"
+      DASHBOARD_TITLE: "${DASHBOARD_TITLE:-Microsoft Rewards}"
+      POLL_MS: "${POLL_MS:-5000}"
+      LOG_REPLAY: "${LOG_REPLAY:-300}"
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    networks:
+      - rewards-network
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  rewards-network:
+    name: rewards-network
+    external: true

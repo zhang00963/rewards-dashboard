@@ -1,0 +1,37 @@
+# 3010 端口方案：将此文件中的 rewards-dashboard 服务合并到
+# Microsoft Rewards Script 项目的 compose.yaml，并在机器人现有的
+# microsoft-rewards-script 服务中增加 ports: ["3010:3010"]。
+#
+# 合并前，请将本项目内层的 rewards-dashboard 目录复制到机器人项目根目录。
+
+services:
+  rewards-dashboard:
+    build:
+      context: ./rewards-dashboard
+    image: "${DASHBOARD_IMAGE:-rewards-dashboard:china}"
+    container_name: rewards-dashboard
+    restart: unless-stopped
+    depends_on:
+      microsoft-rewards-script:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${PORT:-8890}:${PORT:-8890}"
+    env_file:
+      - .env
+    environment:
+      CONTROL_API_URL: http://host.docker.internal:3010
+      CONTROL_API_TOKEN: "${API_TOKEN}"
+      DASHBOARD_USERNAME: "${DASHBOARD_USERNAME:-}"
+      DASHBOARD_PASSWORD: "${DASHBOARD_PASSWORD:-}"
+      PORT: "${PORT:-8890}"
+      TZ: "${TZ:-Asia/Shanghai}"
+      DASHBOARD_TITLE: "${DASHBOARD_TITLE:-Microsoft Rewards}"
+      POLL_MS: "${POLL_MS:-5000}"
+      LOG_REPLAY: "${LOG_REPLAY:-300}"
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    security_opt:
+      - no-new-privileges:true
