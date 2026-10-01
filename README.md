@@ -458,5 +458,5 @@ rewards-dashboard/
 | ------------ | --------------------------------------------------------------------------------------------------------- |
 | 上游仓库     | [mgrimace/rewards-dashboard](https://github.com/mgrimace/rewards-dashboard)（main 分支）    |
 | 本仓库       | [zhang00963/rewards-dashboard](https://github.com/zhang00963/rewards-dashboard) `main` 分支 |
-| 应用包版本   | `1.1.0`；前端开发环境显示 `Development`，正式发布时由 Git 标签写入 `rewards-dashboard/public/version.js`   |
+| 应用包版本   | `1.1.1`；前端开发环境显示 `Development`，正式发布时由 Git 标签写入 `rewards-dashboard/public/version.js`   |
 | 最后同步上游 | 2026-10-01                                                                                                |
