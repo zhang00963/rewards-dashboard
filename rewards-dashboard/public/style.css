@@ -23,11 +23,21 @@
   /* Semantic */
   --positive: #5f7556;
   --negative: #e67c7c;
+  --energy-low-bg: #e3e6df;
+  --energy-low-accent: #5f7556;
+  --energy-low-text: #1e2d18;
+  --energy-medium-bg: #e0e7f1;
+  --energy-medium-accent: #5884b5;
+  --energy-medium-text: #2b4866;
+  --energy-high-bg: #ede8f5;
   --energy-high-accent: #9664d0;
+  --energy-high-text: #3d2060;
 
   /* Layout */
-  --radius: 12px;
-  --shadow: 0 1px 2px rgba(20, 22, 30, 0.06), 0 1px 1px rgba(20, 22, 30, 0.04);
+  --radius: 14px;
+  --shadow:
+    0 1px 2px rgba(20, 22, 30, 0.07),
+    0 12px 28px rgba(20, 22, 30, 0.09);
   --mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
     monospace;
@@ -37,6 +47,18 @@
   --negative-bg: color-mix(in srgb, var(--negative) 16%, var(--surface));
   --amber: color-mix(in srgb, var(--negative) 55%, var(--positive) 45%);
   --amber-bg: color-mix(in srgb, var(--amber) 14%, var(--surface));
+  --accent-glow: color-mix(in srgb, var(--accent) 24%, transparent);
+  --glass-surface: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+
+:root[data-theme-mode="light"] {
+  color-scheme: light;
+  --shadow: 0 1px 2px rgba(20, 22, 30, 0.07), 0 12px 28px rgba(20, 22, 30, 0.09);
+}
+
+:root[data-theme-mode="dark"] {
+  color-scheme: dark;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.46), 0 14px 32px rgba(0, 0, 0, 0.3);
 }
 
 
@@ -64,7 +86,16 @@ body {
 }
 
 body {
-  background: var(--canvas);
+  min-height: 100vh;
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(circle at 8% -10%, var(--accent-glow), transparent 32rem),
+    radial-gradient(
+      circle at 92% 8%,
+      color-mix(in srgb, var(--energy-high-accent) 15%, transparent),
+      transparent 28rem
+    );
+  background-attachment: fixed;
   color: var(--text);
   font:
     15px/1.5 -apple-system,
@@ -154,8 +185,11 @@ main {
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  background: var(--glass-surface);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--text) 5%, transparent);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -164,6 +198,18 @@ main {
 .topbar h1 {
   font-size: 1.15rem;
   margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .topbar h1 {
+    background: linear-gradient(105deg, var(--text) 20%, var(--accent) 65%, var(--energy-high-accent));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
 }
 
 .topbar-right {
@@ -189,12 +235,14 @@ main {
   width: 32px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 82%, var(--accent-subtle));
   color: var(--text);
   cursor: pointer;
 }
 .controls-group .icon-btn:hover {
-  background: var(--hover);
+  background: var(--accent-subtle);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--accent);
 }
 
 .theme-select {
@@ -203,13 +251,14 @@ main {
   font-size: 0.88rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 86%, var(--accent-subtle));
   color: var(--text);
   font-weight: 600;
   cursor: pointer;
 }
 .theme-select:hover {
-  background: var(--hover);
+  background: var(--accent-subtle);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
 }
 
 .language-select {
@@ -240,6 +289,7 @@ main {
   height: 8px;
   border-radius: 50%;
   background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
 }
 .status-live {
   background: var(--positive-bg);
@@ -259,8 +309,10 @@ main {
   position: sticky;
   top: 61px;
   z-index: 15;
-  background: var(--surface);
+  background: var(--glass-surface);
   border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -273,7 +325,7 @@ main {
   margin: 0 auto;
   display: flex;
   gap: 0.15rem;
-  padding: 0 1.25rem;
+  padding: 0.35rem 1.25rem;
   width: max-content;
   min-width: 100%;
 }
@@ -281,38 +333,48 @@ main {
 .tab {
   appearance: none;
   background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
   color: var(--text-muted);
   font: inherit;
   font-size: 0.88rem;
   font-weight: 600;
-  padding: 0.7rem 0.85rem;
+  padding: 0.48rem 0.85rem;
   cursor: pointer;
   white-space: nowrap;
   transition:
     color 0.12s ease,
-    border-color 0.12s ease;
+    border-color 0.12s ease,
+    background 0.12s ease;
 }
 .tab:hover {
   color: var(--text);
-  background: var(--hover);
+  background: color-mix(in srgb, var(--hover) 72%, transparent);
 }
 .tab--active {
   color: var(--accent);
-  border-bottom-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+  background: var(--accent-subtle);
+  box-shadow: inset 0 -2px 0 var(--accent), 0 4px 12px var(--accent-glow);
 }
 
 /* Control strip (start / stop / restart) */
 .control-strip {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0.85rem 1.25rem 0;
+  max-width: calc(1100px - 2.5rem);
+  width: calc(100% - 2.5rem);
+  margin: 0.85rem auto 0;
+  padding: 0.7rem 0.85rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
+  background: linear-gradient(115deg, var(--glass-surface), color-mix(in srgb, var(--accent-subtle) 35%, var(--glass-surface)));
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .ctl-state {
@@ -320,7 +382,7 @@ main {
   align-items: center;
   gap: 0.6rem;
   min-width: 0;
-  width: 100%;
+  flex: 1 1 auto;
 }
 
 #ctlPill {
@@ -342,6 +404,8 @@ main {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .ctl-more {
@@ -406,7 +470,7 @@ main {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
   animation: toast-in 0.18s ease;
 }
 .toast--out {
@@ -528,6 +592,7 @@ main {
   font-size: 0.78rem;
   font-weight: 600;
   white-space: nowrap;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
 }
 .pill-success {
   background: var(--positive-bg);
@@ -571,7 +636,7 @@ main {
 
 /* Inline link-style buttons */
 .link-btn {
-  background: none;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
   border: 1px solid var(--border);
   color: var(--accent);
   border-radius: 6px;
@@ -609,8 +674,10 @@ main {
 
 /* Panel / card container */
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(90deg, var(--accent), var(--energy-medium-accent), var(--energy-high-accent)) top / 100% 2px no-repeat,
+    linear-gradient(145deg, color-mix(in srgb, var(--surface) 96%, var(--accent-subtle)), var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--border));
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.25rem;
@@ -700,7 +767,7 @@ main {
   padding: 0 0.8rem;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 90%, var(--surface-alt));
   color: var(--text);
   cursor: pointer;
   display: inline-flex;
@@ -710,10 +777,14 @@ main {
   white-space: nowrap;
   transition:
     background 0.12s ease,
-    border-color 0.12s ease;
+    border-color 0.12s ease,
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .btn:hover:not(:disabled) {
   background: var(--hover);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
 }
 .btn:disabled {
   opacity: 0.45;
@@ -721,13 +792,15 @@ main {
 }
 
 .btn-primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 68%, var(--energy-high-accent)));
   border-color: var(--accent);
   color: var(--text-inverse);
+  box-shadow: 0 5px 14px var(--accent-glow);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
+  background: linear-gradient(135deg, var(--accent-hover), color-mix(in srgb, var(--accent-hover) 72%, var(--energy-high-accent)));
   border-color: var(--accent-hover);
+  box-shadow: 0 7px 18px var(--accent-glow);
 }
 
 .btn-danger {
@@ -795,12 +868,16 @@ fieldset.field legend {
   font-size: 0.88rem;
   font-weight: 400;
   color: var(--text);
-  background: var(--canvas);
+  background: color-mix(in srgb, var(--surface-alt) 82%, var(--canvas));
   border: 1px solid var(--border);
   border-radius: 8px;
   height: 34px;
   padding: 0 0.6rem;
   width: 100%;
+}
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 .input--mono {
   font-family: var(--mono);
@@ -844,6 +921,9 @@ select.input {
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
+  background: var(--surface-alt);
+  padding: 2px;
+  gap: 2px;
 }
 
 .seg-btn {
@@ -853,13 +933,13 @@ select.input {
   font-weight: 600;
   padding: 0.3rem 0.65rem;
   border: none;
-  background: var(--surface);
+  background: transparent;
   color: var(--text-muted);
   cursor: pointer;
 }
 
 .seg-btn + .seg-btn {
-  border-left: 1px solid var(--border);
+  border-left: none;
 }
 
 .seg-btn:hover {
@@ -869,6 +949,8 @@ select.input {
 .seg-btn--active {
   background: var(--accent);
   color: var(--text-inverse);
+  border-radius: 6px;
+  box-shadow: 0 3px 10px var(--accent-glow);
 }
 
 .seg-btn--active:hover {
@@ -892,6 +974,7 @@ th {
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  background: color-mix(in srgb, var(--surface-alt) 78%, transparent);
 }
 
 th,
@@ -910,7 +993,7 @@ td.strong {
 }
 
 tbody tr:hover {
-  background: var(--hover);
+  background: color-mix(in srgb, var(--accent-subtle) 70%, var(--hover));
 }
 
 /* Empty state */
@@ -950,7 +1033,7 @@ tbody tr:hover {
 .progress {
   height: 8px;
   border-radius: 999px;
-  background: var(--surface-alt);
+  background: color-mix(in srgb, var(--surface-alt) 85%, var(--border));
   border: 1px solid var(--border);
   overflow: hidden;
   margin-bottom: 0.9rem;
@@ -959,7 +1042,8 @@ tbody tr:hover {
 .progress-bar {
   height: 100%;
   width: 0;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--energy-medium-accent), var(--energy-high-accent));
+  box-shadow: 0 0 12px var(--accent-glow);
   transition: width 0.35s ease;
 }
 
@@ -997,14 +1081,15 @@ tbody tr:hover {
 .chart-line {
   fill: none;
   stroke: var(--accent);
-  stroke-width: 2;
+  stroke-width: 2.5;
   stroke-linejoin: round;
   stroke-linecap: round;
+  filter: drop-shadow(0 3px 4px var(--accent-glow));
 }
 
 .chart-area {
-  fill: var(--accent);
-  opacity: 0.12;
+  fill: var(--energy-medium-accent);
+  opacity: 0.16;
   stroke: none;
 }
 
@@ -1012,6 +1097,7 @@ tbody tr:hover {
   fill: var(--accent);
   stroke: var(--surface);
   stroke-width: 1.5;
+  filter: drop-shadow(0 2px 3px var(--accent-glow));
 }
 .chart-dot:hover {
   r: 5;
@@ -1019,6 +1105,7 @@ tbody tr:hover {
 
 .chart-bar {
   fill: var(--accent);
+  filter: drop-shadow(0 2px 3px var(--accent-glow));
   transition: fill 0.12s ease;
 }
 .chart-bar:hover {
@@ -1121,10 +1208,15 @@ tbody tr:hover {
 }
 
 .stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  --card-accent: var(--accent);
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--card-accent) 12%, var(--surface)),
+    var(--surface) 58%
+  );
+  border: 1px solid color-mix(in srgb, var(--card-accent) 24%, var(--border));
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), inset 0 2px 0 color-mix(in srgb, var(--card-accent) 65%, transparent);
   padding: 0.75rem 0.6rem;
   display: flex;
   flex-direction: column;
@@ -1134,10 +1226,30 @@ tbody tr:hover {
   justify-content: center;
   text-align: center;
   box-sizing: border-box;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.stat-card:nth-child(3n + 1) {
+  --card-accent: var(--energy-low-accent);
+}
+
+.stat-card:nth-child(3n + 2) {
+  --card-accent: var(--energy-medium-accent);
+}
+
+.stat-card:nth-child(3n) {
+  --card-accent: var(--energy-high-accent);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--card-accent) 45%, var(--border));
+  box-shadow: var(--shadow), 0 10px 24px color-mix(in srgb, var(--card-accent) 13%, transparent);
 }
 
 .stat-block-chip {
-  background: var(--surface-alt);
+  background: color-mix(in srgb, var(--card-accent) 10%, var(--surface-alt));
+  border: 1px solid color-mix(in srgb, var(--card-accent) 18%, transparent);
   border-radius: 8px;
   padding: 0.5rem 0.6rem; 
   display: flex;
@@ -1157,7 +1269,7 @@ tbody tr:hover {
   font-size: 1.6rem; 
   font-weight: 800;
   line-height: 1;
-  color: var(--text);
+  color: color-mix(in srgb, var(--text) 82%, var(--card-accent));
   letter-spacing: -0.02em;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1269,8 +1381,10 @@ tbody tr:hover {
   margin: 0 0 0 0; 
   width: 100%;
   padding: 1.1rem 1.25rem;
-  background: var(--surface); 
-  border: 1px solid var(--border);
+  background:
+    linear-gradient(90deg, var(--accent), var(--energy-high-accent)) top / 100% 2px no-repeat,
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-subtle) 30%, var(--surface)), var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
   border-radius: var(--radius); 
   box-shadow: var(--shadow); 
 }
@@ -1348,11 +1462,13 @@ tbody tr:hover {
 }
 
 .accum-day--a {
-  background: var(--accent);
+  background: linear-gradient(180deg, var(--energy-medium-accent), var(--accent));
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .accum-day--b {
-  background: var(--accent-hover);
+  background: linear-gradient(180deg, var(--energy-high-accent), var(--accent-hover));
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--energy-high-accent) 30%, transparent);
 }
 
 .accum-day--today {
@@ -1453,20 +1569,20 @@ tbody tr:hover {
 }
 
 .heatmap-level-1{
-    background:color-mix(in srgb,var(--accent) 30%,var(--surface));
+    background:color-mix(in srgb,var(--energy-low-accent) 42%,var(--energy-low-bg));
 }
 
 .heatmap-level-2{
-    background:color-mix(in srgb,var(--accent) 55%,var(--surface));
+    background:color-mix(in srgb,var(--energy-medium-accent) 65%,var(--energy-medium-bg));
 }
 
 .heatmap-level-3{
-    background:color-mix(in srgb,var(--accent) 80%,var(--surface));
+    background:color-mix(in srgb,var(--accent) 82%,var(--energy-medium-accent));
 }
 
 .heatmap-level-4{
-    background:var(--accent);
-    box-shadow:0 0 5px color-mix(in srgb,var(--accent) 55%,transparent);
+    background:var(--energy-high-accent);
+    box-shadow:0 0 6px color-mix(in srgb,var(--energy-high-accent) 58%,transparent);
 }
 
 .heatmap-future{
@@ -1490,6 +1606,7 @@ tbody tr:hover {
   gap: 0.75rem;
   padding: 1.1rem 1.25rem 0.85rem;
   border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent-subtle) 65%, transparent), transparent);
 }
 .hero-panel-header h2 {
   margin: 0;
@@ -1515,7 +1632,7 @@ tbody tr:hover {
 }
 
 .hero-bar-cell {
-  background: var(--surface-alt);
+  background: linear-gradient(135deg, var(--surface-alt), color-mix(in srgb, var(--energy-medium-bg) 38%, var(--surface-alt)));
   border-right: 1px solid var(--border);
   padding: 0.85rem 1.25rem;
   display: flex;
@@ -1550,7 +1667,7 @@ tbody tr:hover {
   min-width: 0;
 }
 .hero-acc-card:hover {
-  background: var(--hover);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent-subtle) 62%, var(--hover)), var(--hover));
 }
 
 .hero-acc-pts {
@@ -1562,7 +1679,8 @@ tbody tr:hover {
   flex-shrink: 0;
   width: 108px;
   min-height: 62px;
-  background: var(--surface-alt);
+  background: linear-gradient(145deg, var(--accent-subtle), color-mix(in srgb, var(--energy-high-bg) 45%, var(--surface-alt)));
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
   border-radius: 8px;
   padding: 0.5rem 0.6rem;
   text-align: center;
@@ -1740,7 +1858,8 @@ tbody tr:hover {
   gap: 0.6rem;
 }
 .acc-detail-group {
-  background: var(--surface-alt);
+  background: linear-gradient(145deg, var(--surface-alt), color-mix(in srgb, var(--energy-high-bg) 28%, var(--surface-alt)));
+  border: 1px solid color-mix(in srgb, var(--energy-high-accent) 14%, var(--border));
   border-radius: 8px;
   padding: 0.75rem 0.85rem;
 }
@@ -1835,8 +1954,8 @@ tbody tr:hover {
 }
 
 .log-box {
-  background: var(--canvas);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--canvas) 92%, var(--accent-subtle)), var(--canvas));
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--border));
   border-radius: 8px;
   height: 60vh;
   min-height: 340px;
@@ -2040,12 +2159,13 @@ tbody tr:hover {
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface);
+  background: linear-gradient(135deg, var(--surface), color-mix(in srgb, var(--surface-alt) 78%, var(--accent-subtle)));
   cursor: pointer;
   font-size: 0.83rem;
 }
 .switch:hover {
-  background: var(--hover);
+  background: color-mix(in srgb, var(--accent-subtle) 62%, var(--hover));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
 }
 .switch input {
   accent-color: var(--accent);
@@ -2167,8 +2287,8 @@ tbody tr:hover {
   min-height: 340px;
   resize: vertical;
   color: var(--text);
-  background: var(--canvas);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--canvas) 94%, var(--accent-subtle)), var(--canvas));
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--border));
   border-radius: 8px;
   padding: 0.75rem;
   tab-size: 2;
@@ -2292,8 +2412,16 @@ tbody tr:hover {
       --focus: #4d8fdb;
       --positive: #87a07a;
       --negative: #c45858;
+      --energy-low-bg: #1f2721;
+      --energy-low-accent: #87a07a;
+      --energy-low-text: #c2cebc;
+      --energy-medium-bg: #1c2431;
+      --energy-medium-accent: #4174ae;
+      --energy-medium-text: #a7c3e2;
+      --energy-high-bg: #211a34;
       --energy-high-accent: #7d5aa9;
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --energy-high-text: #ccc2df;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.42), 0 14px 32px rgba(0, 0, 0, 0.28);
     }
 }
 
@@ -2370,7 +2498,7 @@ tbody tr:hover {
       position: static;
     }
   .tabbar-inner {
-      padding: 0 1rem;
+      padding: 0.35rem 1rem;
     }
   .tab {
       padding: 0.65rem 0.7rem;
@@ -2378,16 +2506,21 @@ tbody tr:hover {
     }
 
   .control-strip {
-      padding: 0.85rem 1rem 0;
+      width: calc(100% - 2rem);
+      padding: 0.75rem;
       align-items: stretch;
       flex-direction: column;
       gap: 0.6rem;
+    }
+  .ctl-state {
+      width: 100%;
     }
   .ctl-actions {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr)) 38px;
       gap: 0.4rem;
       width: 100%;
+      margin-left: 0;
     }
   .ctl-actions .btn {
       min-width: 0;

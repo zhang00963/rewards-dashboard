@@ -26,7 +26,7 @@ export interface ThemePalette {
   positive: string; // income, success
   negative: string; // expense, danger (was 'danger' in todo)
 
-  // Energy levels — todo-specific, silently ignored by budget themeManager
+  // Data intensity levels used by charts, heatmaps and highlighted cards
   energyLowBg: string;
   energyLowAccent: string;
   energyLowText: string;

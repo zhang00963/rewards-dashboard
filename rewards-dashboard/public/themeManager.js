@@ -1,6 +1,5 @@
 // Applies a theme (imported from ./themes/index.js) to the page by setting
-// CSS custom properties on the root element. This dashboard only uses a
-// subset of the full palette shape because I'm reusing themes from my other app
+// CSS custom properties on the root element.
 const TOKEN_TO_CSS_VAR = {
   canvas: "--canvas",
   surface: "--surface",
@@ -17,8 +16,15 @@ const TOKEN_TO_CSS_VAR = {
   focus: "--focus",
   positive: "--positive",
   negative: "--negative",
+  energyLowBg: "--energy-low-bg",
+  energyLowAccent: "--energy-low-accent",
+  energyLowText: "--energy-low-text",
+  energyMediumBg: "--energy-medium-bg",
+  energyMediumAccent: "--energy-medium-accent",
+  energyMediumText: "--energy-medium-text",
   energyHighAccent: "--energy-high-accent",
   energyHighBg: "--energy-high-bg",
+  energyHighText: "--energy-high-text",
 };
 
 export function applyTheme(theme, mode) {
