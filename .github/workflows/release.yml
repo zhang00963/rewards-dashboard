@@ -5,6 +5,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要重新打包的 Git 标签，例如 v1.2.1'
+        required: true
+        type: string
 
 # Required for publishing to GHCR and creating GitHub Releases
 permissions:
@@ -20,6 +26,8 @@ jobs:
       # Fetch repository content for Docker build context
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
 
       # Enable arm64 emulation so we can build multi-arch on GitHub-hosted runners
@@ -41,10 +49,12 @@ jobs:
       # Derive image name and tag from the pushed Git tag
       - name: Prepare image metadata
         id: meta
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
+          TAG="$RELEASE_TAG"
           IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
@@ -63,6 +73,18 @@ jobs:
             ${{ steps.meta.outputs.image }}:latest
             ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
 
+      - name: Package versioned source archive
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="rewards-dashboard-${TAG}"
+          mkdir -p "dist/${ROOT}"
+          git archive "${TAG}" | tar -x -C "dist/${ROOT}"
+          printf 'window.APP_VERSION = "%s";\n' "${TAG}" > "dist/${ROOT}/rewards-dashboard/public/version.js"
+          (cd dist && zip -qr "../${ROOT}.zip" "${ROOT}")
+
       # Create a GitHub Release from the pushed tag and auto-generate notes
       - name: Create GitHub Release
         env:
@@ -78,3 +100,4 @@ jobs:
               --title "Rewards Dashboard $TAG" \
               --generate-notes
           fi
+          gh release upload "$TAG" "rewards-dashboard-${TAG}.zip" --clobber
