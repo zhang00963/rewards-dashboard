@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rewards-dashboard-pwa-v4'
+const CACHE_NAME = 'rewards-dashboard-pwa-v5'
 const ASSETS = [
   '/',
   '/index.html',
@@ -40,6 +40,21 @@ self.addEventListener('fetch', event => {
   if (url.origin === self.location.origin && url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(request).catch(() => caches.match('/index.html'))
+    )
+    return
+  }
+
+  if (url.origin === self.location.origin && url.pathname === '/version.js') {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then(response => {
+          if (response && response.status === 200) {
+            const responseClone = response.clone()
+            caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone))
+          }
+          return response
+        })
+        .catch(() => caches.match(request))
     )
     return
   }

@@ -49,14 +49,6 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
 
-      # Update the version based on the tag
-      - name: Generate frontend version file
-        shell: bash
-        run: |
-          cat > rewards-dashboard/public/version.js <<EOF
-          window.APP_VERSION = "${{ steps.meta.outputs.tag }}";
-          EOF
-
       # Build and push multi-architecture image with both latest and version tags
       - name: Build and push multi-arch image
         uses: docker/build-push-action@v6
@@ -65,6 +57,8 @@ jobs:
           file: rewards-dashboard/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: |
+            APP_VERSION=${{ steps.meta.outputs.tag }}
           tags: |
             ${{ steps.meta.outputs.image }}:latest
             ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
@@ -80,5 +74,7 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists. Skipping creation."
           else
-            gh release create "$TAG" --title "$TAG" --generate-notes
+            gh release create "$TAG" \
+              --title "Rewards Dashboard $TAG" \
+              --generate-notes
           fi

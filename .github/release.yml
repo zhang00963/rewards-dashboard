@@ -1,0 +1,35 @@
+changelog:
+  categories:
+    - title: "✨ 新功能"
+      labels:
+        - "feature"
+        - "enhancement"
+        - "feat"
+    - title: "🐛 修复"
+      labels:
+        - "bug"
+        - "fix"
+    - title: "🎨 界面与体验"
+      labels:
+        - "ui"
+        - "design"
+        - "style"
+    - title: "📚 文档与配置"
+      labels:
+        - "documentation"
+        - "docs"
+        - "config"
+    - title: "🧰 维护"
+      labels:
+        - "dependencies"
+        - "maintenance"
+        - "chore"
+    - title: "📦 其他变更"
+      labels:
+        - "*"
+  exclude:
+    labels:
+      - "duplicate"
+      - "question"
+      - "invalid"
+      - "wontfix"

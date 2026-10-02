@@ -7,10 +7,14 @@ ENV NODE_ENV=production
 # Mount a volume at /data or it's lost when the container is replaced.
 ENV DATA_DIR=/data
 
+ARG APP_VERSION=Development
+
 COPY package.json ./
 COPY server.js ./
 COPY lib ./lib
 COPY public ./public
+
+RUN printf 'window.APP_VERSION = "%s";\n' "$APP_VERSION" > ./public/version.js
 
 RUN mkdir -p /data
 
