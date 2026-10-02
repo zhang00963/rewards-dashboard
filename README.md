@@ -138,12 +138,15 @@ Microsoft-Rewards-Script/
    `APP_VERSION` 构建参数写入 `public/version.js`；如需本地指定版本，可执行：
 
    ```bash
-   docker compose build --build-arg APP_VERSION=v1.2.2 rewards-dashboard
+   docker compose build --build-arg APP_VERSION=v1.2.3 rewards-dashboard
    ```
 
    GitHub Release 页面中的 `Source code (zip)` 是 GitHub 自动生成的源码快照，保留开发文件中的
    `Development` 标记。发布工作流会额外上传 `rewards-dashboard-vX.Y.Z.zip`，该压缩包会将
    `public/version.js` 写入对应的 Git 标签版本；部署时请优先下载这个版本化压缩包。
+
+   Release 说明由发布工作流根据当前 Git 标签与上一个标签之间的提交自动生成，直接提交到
+   `main` 的变更也会列出；重新运行同一个标签的工作流时，会更新已有 Release 的说明。
 
 5. 启动容器：
 
@@ -469,5 +472,5 @@ rewards-dashboard/
 | ------------ | --------------------------------------------------------------------------------------------------------- |
 | 上游仓库     | [mgrimace/rewards-dashboard](https://github.com/mgrimace/rewards-dashboard)（main 分支）    |
 | 本仓库       | [zhang00963/rewards-dashboard](https://github.com/zhang00963/rewards-dashboard) `main` 分支 |
-| 应用包版本   | `1.2.2`；前端开发环境显示 `Development`，Docker 发布镜像通过 `APP_VERSION` 构建参数写入 `rewards-dashboard/public/version.js` |
+| 应用包版本   | `1.2.3`；前端开发环境显示 `Development`，Docker 发布镜像通过 `APP_VERSION` 构建参数写入 `rewards-dashboard/public/version.js` |
 | 最后同步上游 | 2026-10-01                                                                                                |
