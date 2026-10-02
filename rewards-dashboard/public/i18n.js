@@ -1,5 +1,13 @@
+import {
+  LOCALE_OPTIONS,
+  TRANSLATIONS,
+  intlLocale,
+  matchSupportedLocale,
+  translateDynamic,
+} from "./locales.js";
+
 const STORAGE_KEY = "rewards-dashboard-language";
-const SUPPORTED_LOCALES = new Set(["en", "zh-CN"]);
+const SUPPORTED_LOCALES = new Set(LOCALE_OPTIONS.map((locale) => locale.id));
 
 const ZH_CN = {
   "Microsoft Rewards Dashboard": "Microsoft Rewards 控制台",
@@ -530,8 +538,19 @@ function preferredLocale() {
     if (SUPPORTED_LOCALES.has(stored)) return stored;
   } catch {
   }
-  const browserLocale = typeof navigator === "undefined" ? "en" : navigator.language;
-  return browserLocale?.toLowerCase().startsWith("zh") ? "zh-CN" : "en";
+  const browserLocales =
+    typeof navigator === "undefined"
+      ? ["en"]
+      : navigator.languages?.length
+        ? navigator.languages
+        : [navigator.language];
+  for (const language of browserLocales) {
+    const locale = matchSupportedLocale(language);
+    if (locale !== "en" || String(language).toLowerCase().startsWith("en")) {
+      return locale;
+    }
+  }
+  return "en";
 }
 
 function translateZh(value) {
@@ -551,7 +570,13 @@ export function translate(value) {
   const trailing = string.match(/\s*$/)?.[0] || "";
   const core = string.trim().replace(/\s+/g, " ");
   if (!core) return string;
-  return leading + translateZh(core) + trailing;
+  let translated;
+  if (currentLocale === "zh-CN") {
+    translated = translateZh(core);
+  } else {
+    translated = TRANSLATIONS[currentLocale]?.[core] || translateDynamic(currentLocale, core);
+  }
+  return leading + translated + trailing;
 }
 
 export function getLocale() {
@@ -559,7 +584,7 @@ export function getLocale() {
 }
 
 export function getIntlLocale() {
-  return currentLocale === "zh-CN" ? "zh-CN" : "en-US";
+  return intlLocale(currentLocale);
 }
 
 function translateTextNode(node) {
@@ -645,6 +670,9 @@ export function setLocale(locale, { persist = true } = {}) {
 export function initI18n(select) {
   currentLocale = preferredLocale();
   if (select) {
+    select.replaceChildren(
+      ...LOCALE_OPTIONS.map(({ id, label }) => new Option(label, id)),
+    );
     select.value = currentLocale;
     select.addEventListener("change", () => setLocale(select.value));
   }

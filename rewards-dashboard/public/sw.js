@@ -1,10 +1,11 @@
-const CACHE_NAME = 'rewards-dashboard-pwa-v5'
+const CACHE_NAME = 'rewards-dashboard-pwa-v6'
 const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
   '/app.js',
   '/i18n.js',
+  '/locales.js',
   '/manifest.json',
   '/icon.png'
 ]
